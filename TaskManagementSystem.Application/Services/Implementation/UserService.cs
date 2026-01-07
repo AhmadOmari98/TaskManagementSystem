@@ -1,16 +1,15 @@
-﻿using Castle.Core.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using TaskManagementSystem.Application.DTOs;
 using TaskManagementSystem.Application.DTOs.Filter;
 using TaskManagementSystem.Application.DTOs.Request;
 using TaskManagementSystem.Application.DTOs.Response;
 using TaskManagementSystem.Application.Mapping;
+using TaskManagementSystem.Application.Services.Interface;
 using TaskManagementSystem.Domain.Entities;
 using TaskManagementSystem.Domain.Interface.Repositories;
-using TaskManagementSystem.Domain.Interface.Services;
 
-namespace TaskManagementSystem.Application.Services
+namespace TaskManagementSystem.Application.Services.Implementation
 {
     public class UserService : IUserService
     {
@@ -24,9 +23,10 @@ namespace TaskManagementSystem.Application.Services
             _repository = repository;
         }
 
+        //--------------------------------------------------------*
         public async Task<PagedDataDto<UserResponse>> Search(SearchPageDto<UserFilter> searchPageDto)
         {
-            _logger.LogInformation($"UserService - Search | Start PageIndex={searchPageDto.PageIndex}, PageSize={searchPageDto.PageSize}, Criteria={searchPageDto.Criteria}");
+            _logger.LogInformation($"UserService - Search | Start");
 
             Expression<Func<User, bool>> predicate = x =>
             (
@@ -42,17 +42,16 @@ namespace TaskManagementSystem.Application.Services
                 x.Role == searchPageDto.Criteria.Role.Value
             );
 
-            var userProfiles = await _repository.PageAsync(
-                predicate: predicate,
-                pageIndex: searchPageDto.PageIndex,
-                pageSize: searchPageDto.PageSize);
+            var users = await _repository.PageAsync(predicate: predicate,
+                                                    pageIndex: searchPageDto.PageIndex,
+                                                    pageSize: searchPageDto.PageSize);
 
-            _logger.LogInformation($"UserService - Search | End ReturnedCount={userProfiles.Data.Count}, TotalCount={userProfiles.TotalCount}");
+            _logger.LogInformation($"UserService - Search | End ReturnedCount={users.Data.Count}, TotalCount={users.TotalCount}");
 
             var result = new PagedDataDto<UserResponse>
             {
-                Data = userProfiles.Data.Select(user => user.From()).ToList(),
-                TotalCount = userProfiles.TotalCount
+                Data = users.Data.Select(user => user.From()).ToList(),
+                TotalCount = users.TotalCount
             };
 
             return result;
@@ -68,7 +67,7 @@ namespace TaskManagementSystem.Application.Services
                 throw new Exception("Invalid ID");
             }
 
-            var user = await _repository.GetByIdAsync(id);
+            var user = await _repository.GetByIdAsync(id: id);
 
             if (user is null)
             {
@@ -81,9 +80,9 @@ namespace TaskManagementSystem.Application.Services
             return user.From();
         }
 
-        public async Task Add(CreateUserRequest request, int createdBy)
+        public async Task Add(CreateUserRequest request, int loggedInUserId)
         {
-            _logger.LogInformation($"UserService - Add | Start Email={request.Email}, CreatedBy={createdBy}");
+            _logger.LogInformation($"UserService - Add | Start Email={request.Email}, LoggedInUserId={loggedInUserId}");
 
             if (await _repository.AnyAsync(x => request.Email.Trim().ToUpper() == x.Email.Trim().ToUpper()))
             {
@@ -91,14 +90,14 @@ namespace TaskManagementSystem.Application.Services
                 throw new Exception("Email already exists");
             }
 
-            await _repository.AddAsync(request.To(createdBy));
+            await _repository.AddAsync(entity: request.To(loggedInUserId: loggedInUserId));
 
             _logger.LogInformation($"UserService - Add | End Email={request.Email}");
         }
 
-        public async Task Update(UpdateUserRequest request, int updatedBy)
+        public async Task Update(UpdateUserRequest request, int loggedInUserId)
         {
-            _logger.LogInformation($"UserService - Update | Start Id={request.Id}, UpdatedBy={updatedBy}");
+            _logger.LogInformation($"UserService - Update | Start Id={request.Id}, LoggedInUserId={loggedInUserId}");
 
             if (request.Id <= 0)
             {
@@ -112,7 +111,7 @@ namespace TaskManagementSystem.Application.Services
                 throw new Exception("Email already exists");
             }
 
-            var user = await _repository.GetByIdAsync(request.Id);
+            var user = await _repository.GetByIdAsync(id: request.Id);
 
             if (user is null)
             {
@@ -120,15 +119,18 @@ namespace TaskManagementSystem.Application.Services
                 throw new Exception("User not found");
             }
 
-            user.Update(request.Name, request.Email, request.Role, updatedBy);
+            user.Update(name: request.Name,
+                        email: request.Email,
+                        role: request.Role,
+                        loggedInUserId: loggedInUserId);
 
             _logger.LogInformation($"UserService - Update | End Id={request.Id}");
 
         }
 
-        public async Task Delete(int id, int updatedBy)
+        public async Task Delete(int id, int loggedInUserId)
         {
-            _logger.LogInformation($"UserService - Delete | Start Id={id}, DeletedBy={updatedBy}");
+            _logger.LogInformation($"UserService - Delete | Start Id={id}, LoggedInUserId={loggedInUserId}");
 
             if (id <= 0)
             {
@@ -136,14 +138,14 @@ namespace TaskManagementSystem.Application.Services
                 throw new Exception("Invalid ID");
             }
 
-            var user = await _repository.GetByIdAsync(id);
+            var user = await _repository.GetByIdAsync(id: id);
 
             if (user is null)
             {
                 _logger.LogWarning($"UserService - Delete | User not found Id={id}");
                 throw new Exception("User profile not found");
             }
-            user.Delete(updatedBy);
+            user.Delete(loggedInUserId: loggedInUserId);
 
             _logger.LogInformation($"UserService - Delete | End Id={id}");
         }

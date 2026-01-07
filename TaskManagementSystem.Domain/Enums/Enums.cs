@@ -1,13 +1,13 @@
 ﻿
 namespace TaskManagementSystem.Domain.Enums
 {
-    public enum UserRoleEnum
+    public enum UserRole
     {
         Admin = 1,
         User = 2
     }
 
-    public enum TaskStatusEnum
+    public enum WorkItemStatus
     {
         New = 1,
         Pending = 2,

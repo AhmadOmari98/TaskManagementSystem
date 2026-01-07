@@ -16,11 +16,11 @@ public class PermissionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Read headers
-        var userIdHeader = context.Request.Headers["X-User-Id"].FirstOrDefault();
-        var roleHeader = context.Request.Headers["X-User-Role"].FirstOrDefault();
+        var loggedInUserIdHeader = context.Request.Headers["X-User-Id"].FirstOrDefault();
+        var loggedInUserRoleHeader = context.Request.Headers["X-User-Role"].FirstOrDefault();
 
         // Validate headers existence
-        if (string.IsNullOrWhiteSpace(userIdHeader) || string.IsNullOrWhiteSpace(roleHeader))
+        if (string.IsNullOrWhiteSpace(loggedInUserIdHeader) || string.IsNullOrWhiteSpace(loggedInUserRoleHeader))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("Missing user headers");
@@ -28,7 +28,7 @@ public class PermissionMiddleware
         }
 
         // Parse role
-        if (!Enum.TryParse<UserRoleEnum>(roleHeader, true, out var role))
+        if (!Enum.TryParse<UserRole>(loggedInUserRoleHeader, true, out var role))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("Invalid role");
@@ -36,10 +36,10 @@ public class PermissionMiddleware
         }
 
         // Store user context
-        context.Items["UserId"] = int.Parse(userIdHeader);
-        context.Items["UserRole"] = role;
+        context.Items["LoggedInUserId"] = int.Parse(loggedInUserIdHeader);
+        context.Items["LoggedInUserRole"] = role;
 
-        _logger.LogInformation($"Request by UserId={userIdHeader}, Role={role}");
+        _logger.LogInformation($"Request by UserId={loggedInUserIdHeader}, Role={role}");
 
         // Get required permission from endpoint
         var endpoint = context.GetEndpoint();
@@ -50,7 +50,7 @@ public class PermissionMiddleware
         {
             if (!RolePermissions.Map.TryGetValue(role, out var permissions) || !permissions.Contains(permissionAttr.Permission))
             {
-                _logger.LogWarning($"Permission denied. UserId={userIdHeader}, Role={role}, Permission={permissionAttr.Permission}");
+                _logger.LogWarning($"Permission denied. UserId={loggedInUserIdHeader}, Role={role}, Permission={permissionAttr.Permission}");
 
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsync("Access denied");

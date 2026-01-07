@@ -4,27 +4,32 @@ namespace TaskManagementSystem.Application.Authorization
 {
     public static class RolePermissions
     {
-        public static readonly Dictionary<UserRoleEnum, List<string>> Map =
+        public static readonly Dictionary<UserRole, List<string>> Map =
             new()
             {
-                [UserRoleEnum.Admin] = new()
+                [UserRole.Admin] = new()
                 {
-                    Permissions.User_Create,
+                    Permissions.User_Search,
                     Permissions.User_View,
+                    Permissions.User_Create,
                     Permissions.User_Update,
                     Permissions.User_Delete,
 
-                    Permissions.Task_Create,
-                    Permissions.Task_View,
-                    Permissions.Task_Update,
-                    Permissions.Task_Delete
+                    Permissions.WorkItem_Search,
+                    Permissions.WorkItem_View,
+                    Permissions.WorkItem_Create,
+                    Permissions.WorkItem_Update,
+                    Permissions.WorkItem_UpdateStatus,
+                    Permissions.WorkItem_Delete
                 },
 
-                [UserRoleEnum.User] = new()
+                [UserRole.User] = new()
                 {
                     Permissions.User_View,
-                    Permissions.Task_View,
-                    Permissions.Task_Update // status only (checked later)
+
+                    Permissions.WorkItem_Search,
+                    Permissions.WorkItem_View,
+                    Permissions.WorkItem_UpdateStatus,
                 }
             };
     }

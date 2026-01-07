@@ -6,12 +6,12 @@ namespace TaskManagementSystem.Application.Mapping
 {
     public static class UserMapping
     {
-        public static User To(this CreateUserRequest request, int createdBy)
+        public static User To(this CreateUserRequest request, int loggedInUserId)
         {
             return new User(name: request.Name,
                             email: request.Email,
                             role: request.Role,
-                            createdBy: createdBy);
+                            loggedInUserId: loggedInUserId);
         }
 
         public static UserResponse From(this User entity)

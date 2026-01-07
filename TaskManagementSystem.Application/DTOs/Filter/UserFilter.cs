@@ -6,6 +6,6 @@ namespace TaskManagementSystem.Application.DTOs.Filter
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
-        public UserRoleEnum? Role { get; set; }
+        public UserRole? Role { get; set; }
     }
 }

@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManagementSystem.Infrastructure.Context;
-using TaskManagementSystem.Infrastructure;
 using Serilog;
+using TaskManagementSystem.API.Middlewares;
+using TaskManagementSystem.API.Swagger;
+using TaskManagementSystem.Application;
+using TaskManagementSystem.Infrastructure;
+using TaskManagementSystem.Infrastructure.Context;
+using TaskManagementSystem.Infrastructure.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =======================
-// Configure Serilog HERE
-// =======================
+// Configure Serilog 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
@@ -19,28 +21,37 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-
-// =======================
-// Add services to the container
-// =======================
-
-// Add DbContext
+// DbContext (InMemory)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseInMemoryDatabase("TaskManagementSystemDb"));
 
-// Add repositories, services and middlewares
+// Repositories & Services
 builder.Services.AddRepositories();
+builder.Services.AddServices();
 
+// Controllers & Swagger
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<AddHeadersOperationFilter>();
+});
 
 var app = builder.Build();
 
-// =======================
+// Seed Database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    DbSeeder.Seed(dbContext);
+}
+
+// Global exception handling
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline
-// =======================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -49,10 +60,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//Permission Middleware (HERE)
+// Permission / Authorization middleware
 app.UseMiddleware<PermissionMiddleware>();
 
 app.UseAuthorization();
+
+// Save changes after request
+app.UseMiddleware<SaveChangesMiddleware>();
 
 app.MapControllers();
 

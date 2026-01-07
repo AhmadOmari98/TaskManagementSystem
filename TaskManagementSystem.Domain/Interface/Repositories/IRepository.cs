@@ -13,7 +13,7 @@ namespace TaskManagementSystem.Domain.Interface.Repositories
         Task<(List<T> Data, int TotalCount)> PageAsync(Expression<Func<T, bool>> predicate, int pageIndex, int pageSize);
         Task<bool> AnyAsync();
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
-        Task AddAsync(T entity);
-        Task SaveAsync();
+        System.Threading.Tasks.Task AddAsync(T entity);
+        System.Threading.Tasks.Task SaveAsync();
     }
 }
