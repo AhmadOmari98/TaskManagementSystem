@@ -59,8 +59,8 @@ namespace TaskManagementSystem.Infrastructure.Seed
                     loggedInUserId: admin.Id),
             
                 new WorkItem(
-                    title: "Create tasks module",
-                    description: "Implement tasks CRUD",
+                    title: "Create workItems module",
+                    description: "Implement workItems CRUD",
                     assignedUserId: normalUser.Id,
                     loggedInUserId: admin.Id)
             };

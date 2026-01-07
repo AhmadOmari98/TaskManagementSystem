@@ -11,10 +11,10 @@ namespace TaskManagementSystem.API.Swagger
         {
             operation.Parameters ??= new List<OpenApiParameter>();
 
-            // X-User-Id header
+            // LoggedIn-UserId header
             operation.Parameters.Add(new OpenApiParameter
             {
-                Name = "X-User-Id",
+                Name = "LoggedIn-UserId",
                 In = ParameterLocation.Header,
                 Required = true,
                 Description = "Authenticated user identifier",
@@ -25,10 +25,10 @@ namespace TaskManagementSystem.API.Swagger
                 }
             });
 
-            // X-User-Role header
+            // LoggedIn-UserRole header
             operation.Parameters.Add(new OpenApiParameter
             {
-                Name = "X-User-Role",
+                Name = "LoggedIn-UserRole",
                 In = ParameterLocation.Header,
                 Required = true,
                 Description = "User role (Admin, User)",

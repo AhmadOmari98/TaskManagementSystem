@@ -16,8 +16,8 @@ public class PermissionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Read headers
-        var loggedInUserIdHeader = context.Request.Headers["X-User-Id"].FirstOrDefault();
-        var loggedInUserRoleHeader = context.Request.Headers["X-User-Role"].FirstOrDefault();
+        var loggedInUserIdHeader = context.Request.Headers["LoggedIn-UserId"].FirstOrDefault();
+        var loggedInUserRoleHeader = context.Request.Headers["LoggedIn-UserRole"].FirstOrDefault();
 
         // Validate headers existence
         if (string.IsNullOrWhiteSpace(loggedInUserIdHeader) || string.IsNullOrWhiteSpace(loggedInUserRoleHeader))
