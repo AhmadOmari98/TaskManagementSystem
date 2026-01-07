@@ -201,7 +201,8 @@ Before running this project, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone <[repository-url](https://github.com/AhmadOmari98/TaskManagementSystem)>
+
+git clone [repository-url]([https://github.com/AhmadOmari98/TaskManagementSystem))
 cd TaskManagementSystem
 ```
 
