@@ -42,7 +42,7 @@ namespace TaskManagementSystem.API.Controllers
         {
             _logger.LogInformation($"UsersController - GetById | Start Id={id}, RequestedBy={LoggedInUserId}");
 
-            var result = await _userService.GetById(id: id);
+            var result = await _userService.GetById(id: id, loggedInUserId: LoggedInUserId, loggedInUserRole: LoggedInUserRole);
 
             _logger.LogInformation($"UsersController - GetById | End Id={id}");
 

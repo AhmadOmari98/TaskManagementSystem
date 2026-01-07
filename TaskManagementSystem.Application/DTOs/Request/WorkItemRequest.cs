@@ -23,6 +23,6 @@ namespace TaskManagementSystem.Application.DTOs.Request
         public int Id { get; set; }
 
         [Required, EnumDataType(typeof(WorkItemStatus))]
-        public WorkItemStatus Status { get; private set; }
+        public WorkItemStatus Status { get; set; }
     }
 }

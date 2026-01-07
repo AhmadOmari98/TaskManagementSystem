@@ -7,6 +7,7 @@ using TaskManagementSystem.Application.DTOs.Response;
 using TaskManagementSystem.Application.Mapping;
 using TaskManagementSystem.Application.Services.Interface;
 using TaskManagementSystem.Domain.Entities;
+using TaskManagementSystem.Domain.Enums;
 using TaskManagementSystem.Domain.Interface.Repositories;
 
 namespace TaskManagementSystem.Application.Services.Implementation
@@ -57,7 +58,7 @@ namespace TaskManagementSystem.Application.Services.Implementation
             return result;
         }
 
-        public async Task<UserResponse> GetById(int id)
+        public async Task<UserResponse> GetById(int id, int loggedInUserId, UserRole loggedInUserRole)
         {
             _logger.LogInformation($"UserService - GetById | Start Id={id}");
 
@@ -65,6 +66,13 @@ namespace TaskManagementSystem.Application.Services.Implementation
             {
                 _logger.LogWarning($"UserService - GetById | Invalid Id={id}");
                 throw new Exception("Invalid ID");
+            }
+
+            // User can only view his own profile
+            if (loggedInUserRole == UserRole.User && id != loggedInUserId)
+            {
+                _logger.LogWarning($"UserService - GetById | Access denied RequestedBy={loggedInUserRole}, TargetUserId={id}");
+                throw new Exception("You are not allowed to view this user");
             }
 
             var user = await _repository.GetByIdAsync(id: id);
