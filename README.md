@@ -202,7 +202,7 @@ Before running this project, ensure you have the following installed:
 
 ```bash
 
-git clone [repository-url](https://github.com/AhmadOmari98/TaskManagementSystem)
+git clone https://github.com/AhmadOmari98/TaskManagementSystem
 cd TaskManagementSystem
 ```
 
@@ -236,7 +236,7 @@ Once the application is running, you can access:
 
 > **Note**: The actual port number will be displayed in the console when you run the application. Check the `launchSettings.json` file for default ports.
 
-## 📚 API Documentation
+## API Documentation
 
 The API is fully documented using Swagger/OpenAPI. Once the application is running:
 
