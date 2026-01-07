@@ -83,3 +83,43 @@ This API uses **custom header-based authentication** (no JWT).
 ```text
 LoggedIn-UserId: 1
 LoggedIn-UserRole: Admin
+
+### Example (User)
+
+```text
+LoggedIn-UserId: 2
+LoggedIn-UserRole: User
+
+## Seeded Data
+
+On application startup, the **in-memory database** is automatically seeded with initial data for testing and demonstration purposes.
+
+---
+
+### Users
+
+```json
+{
+  "id": 1,
+  "name": "Admin User",
+  "email": "admin@test.com",
+  "role": 1
+}
+
+```json
+{
+  "id": 2,
+  "name": "Normal User",
+  "email": "user@test.com",
+  "role": 2
+}
+---
+
+### UserRole Mapping
+
+| Role Id | Role Name |
+|--------:|-----------|
+| 1 | Admin |
+| 2 | User |
+
+---
