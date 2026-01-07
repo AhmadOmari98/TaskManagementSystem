@@ -67,36 +67,58 @@ This Task Management System API provides a complete solution for managing users 
 
 ## 🏗️ Architecture
 
-The project follows **Clean Architecture** principles with clear separation of concerns:
+The project follows **Clean Architecture** principles with clear separation of concerns and dependency flow:
+
+### Architecture Layers & Dependencies
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    API Layer                             │
 │  (Controllers, Middlewares, Attributes, Swagger)         │
+│                                                          │
+│  Dependencies: → Application                            │
 └──────────────────────┬──────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────┐
+                       │ depends on
+                       ▼
+┌─────────────────────────────────────────────────────────┐
 │                Application Layer                         │
 │  (Services, DTOs, Mappings, Authorization)              │
+│                                                          │
+│  Dependencies: → Infrastructure                          │
 └──────────────────────┬──────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────┐
-│                  Domain Layer                            │
-│  (Entities, Enums, Constants, Interfaces)               │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────────────┐
+                       │ depends on
+                       ▼
+┌─────────────────────────────────────────────────────────┐
 │              Infrastructure Layer                         │
 │  (DbContext, Repositories, Entity Configurations)        │
+│                                                          │
+│  Dependencies: → Domain                                   │
+└──────────────────────┬──────────────────────────────────┘
+                       │ depends on
+                       ▼
+┌─────────────────────────────────────────────────────────┐
+│                  Domain Layer                            │
+│  (Entities, Enums, Constants, Interfaces)               │
+│                                                          │
+│  Dependencies: None (Core Layer)                         │
 └──────────────────────────────────────────────────────────┘
 ```
 
+### Dependency Flow
+
+**API → Application → Infrastructure → Domain**
+
+- **API Layer** depends on **Application Layer**
+- **Application Layer** depends on **Infrastructure Layer**
+- **Infrastructure Layer** depends on **Domain Layer**
+- **Domain Layer** has no dependencies (pure business logic)
+
 ### Layer Responsibilities
 
-- **API Layer**: HTTP endpoints, middleware, request/response handling
-- **Application Layer**: Business logic, service orchestration, DTOs
-- **Domain Layer**: Core entities, business rules, domain validation
-- **Infrastructure Layer**: Data access, repository implementations, database context
+- **API Layer**: HTTP endpoints, middleware, request/response handling, Swagger configuration
+- **Application Layer**: Business logic orchestration, service implementations, DTOs, mappings, authorization logic
+- **Infrastructure Layer**: Data access implementations, repository pattern, Entity Framework configurations, database context
+- **Domain Layer**: Core business entities, domain rules, validation logic, enums, constants, repository interfaces
 
 ## 🛠️ Technologies Used
 
@@ -113,7 +135,8 @@ The project follows **Clean Architecture** principles with clear separation of c
 
 ```
 TaskManagementSystem/
-├── TaskManagementSystem.API/              # API Layer
+│
+├── TaskManagementSystem.API/              # API Layer (depends on Application)
 │   ├── Controllers/                        # API Controllers
 │   │   ├── BaseApiController.cs
 │   │   ├── UsersController.cs
@@ -128,27 +151,58 @@ TaskManagementSystem/
 │   │   └── AddHeadersOperationFilter.cs
 │   └── Program.cs                         # Application Entry Point
 │
-├── TaskManagementSystem.Application/       # Application Layer
+├── TaskManagementSystem.Application/       # Application Layer (depends on Infrastructure)
 │   ├── Services/                          # Business Logic Services
+│   │   ├── Interface/                     # Service Interfaces
+│   │   └── Implementation/                # Service Implementations
 │   ├── DTOs/                              # Data Transfer Objects
-│   ├── Mapping/                           # AutoMapper Profiles
-│   └── Authorization/                     # Permission Definitions
+│   │   ├── Request/                       # Request DTOs
+│   │   ├── Response/                     # Response DTOs
+│   │   └── Filter/                        # Filter DTOs
+│   ├── Mapping/                           # Entity-DTO Mappings
+│   ├── Authorization/                     # Permission Definitions
+│   └── DependencyInjection_AddServices.cs # DI Registration
 │
-├── TaskManagementSystem.Domain/           # Domain Layer
-│   ├── Entities/                          # Domain Entities
-│   ├── Enums/                             # Domain Enums
-│   ├── Constants/                         # Domain Constants
-│   └── Interface/                         # Domain Interfaces
-│
-├── TaskManagementSystem.Infrastructure/    # Infrastructure Layer
+├── TaskManagementSystem.Infrastructure/    # Infrastructure Layer (depends on Domain)
 │   ├── Context/                           # DbContext
+│   │   └── ApplicationDbContext.cs
 │   ├── Repositories/                      # Repository Implementations
+│   │   └── Repository.cs                  # Generic Repository
 │   ├── EntitiesConfigurations/            # EF Core Configurations
-│   └── Seed/                              # Database Seeding
+│   │   ├── UserConfigration.cs
+│   │   └── WorkItemConfigration.cs
+│   ├── Seed/                              # Database Seeding
+│   │   └── DbSeeder.cs
+│   └── DependencyInjection_AddRepositories.cs # DI Registration
+│
+├── TaskManagementSystem.Domain/           # Domain Layer (No Dependencies)
+│   ├── Entities/                          # Domain Entities
+│   │   ├── DomainEntity.cs                # Base Entity
+│   │   ├── User.cs
+│   │   └── WorkItem.cs
+│   ├── Enums/                             # Domain Enums
+│   │   └── Enums.cs                       # UserRole, WorkItemStatus
+│   ├── Constants/                         # Domain Constants
+│   │   ├── UserConstraints.cs
+│   │   └── WorkItemConstraints.cs
+│   └── Interface/                         # Domain Interfaces
+│       └── Repositories/
+│           └── IRepository.cs             # Repository Interface
 │
 └── TaskManagementSystem.Tests/            # Test Project
     ├── API/                               # Controller Tests
+    │   └── UsersControllerTests.cs
     └── Application/                       # Service Tests
+        └── UserServiceTests.cs
+```
+
+### Dependency Relationships
+
+```
+API Layer
+  └─→ Application Layer
+        └─→ Infrastructure Layer
+              └─→ Domain Layer (Core - No Dependencies)
 ```
 
 ## 📦 Prerequisites
@@ -537,24 +591,59 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 ## 🎓 Design Patterns & Best Practices
 
+### Architecture Pattern: Clean Architecture
+
+The project implements **Clean Architecture** with the following dependency flow:
+
+```
+┌─────────────┐
+│  API Layer  │  ← Entry Point (HTTP Requests)
+└──────┬──────┘
+       │ References
+       ▼
+┌──────────────────┐
+│ Application      │  ← Business Logic Orchestration
+│ Layer            │
+└──────┬───────────┘
+       │ References
+       ▼
+┌──────────────────┐
+│ Infrastructure   │  ← Data Access & External Services
+│ Layer            │
+└──────┬───────────┘
+       │ References
+       ▼
+┌──────────────────┐
+│ Domain Layer     │  ← Core Business Logic (No Dependencies)
+│ (Core)           │
+└──────────────────┘
+```
+
+### Dependency Rules
+
+1. **API Layer** → References **Application Layer** only
+2. **Application Layer** → References **Infrastructure Layer** only
+3. **Infrastructure Layer** → References **Domain Layer** only
+4. **Domain Layer** → No dependencies (Pure C# code)
+
 ### Patterns Implemented
 
-- **Repository Pattern**: Data access abstraction
-- **Dependency Injection**: Loose coupling and testability
-- **Middleware Pattern**: Cross-cutting concerns
-- **DTO Pattern**: Data transfer objects for API contracts
-- **Domain-Driven Design**: Rich domain models with business logic
+- **Repository Pattern**: Data access abstraction via `IRepository<T>` interface in Domain, implementation in Infrastructure
+- **Dependency Injection**: Full DI container integration for loose coupling and testability
+- **Middleware Pattern**: Cross-cutting concerns (Exception handling, Permissions, SaveChanges)
+- **DTO Pattern**: Data transfer objects for API contracts, separation between API and Domain models
+- **Domain-Driven Design**: Rich domain models with encapsulated business logic and validation
 
 ### Best Practices
 
-- ✅ Separation of concerns
-- ✅ Single Responsibility Principle
-- ✅ Dependency Inversion Principle
-- ✅ Domain validation
-- ✅ Exception handling
-- ✅ Structured logging
-- ✅ API versioning ready
-- ✅ Comprehensive error responses
+- ✅ **Separation of concerns** - Each layer has a single, well-defined responsibility
+- ✅ **Single Responsibility Principle** - Classes and methods have focused responsibilities
+- ✅ **Dependency Inversion Principle** - Dependencies point inward toward Domain
+- ✅ **Domain validation** - Business rules enforced at domain entity level
+- ✅ **Exception handling** - Global exception handling middleware
+- ✅ **Structured logging** - Comprehensive logging with Serilog
+- ✅ **Repository abstraction** - Data access abstracted through interfaces
+- ✅ **Comprehensive error responses** - Clear error messages for API consumers
 
 ## 📄 License
 
