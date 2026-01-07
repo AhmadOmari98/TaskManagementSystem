@@ -2,13 +2,13 @@
 {
     public class DomainEntity
     {
-        public int Id { get; set; }
-        public int? CreatedBy { get; set; } = null;
-        public int? UpdatedBy { get; set; } = null;
-        public DateTime? CreatedDate { get; set; } = null;
-        public DateTime? UpdatedDate { get; set; } = null;
-        public bool IsPublished { get; set; } = false;
-        public bool IsActivated { get; set; } = true;
-        public bool IsDeleted { get; set; } = false;
+        public int Id { get; protected set; }
+        public int? CreatedBy { get; protected set; } = null;
+        public int? UpdatedBy { get; protected set; } = null;
+        public DateTime? CreatedDate { get; protected set; } = null;
+        public DateTime? UpdatedDate { get; protected set; } = null;
+        public bool IsPublished { get; protected set; } = false;
+        public bool IsActivated { get; protected set; } = true;
+        public bool IsDeleted { get; protected set; } = false;
     }
 }

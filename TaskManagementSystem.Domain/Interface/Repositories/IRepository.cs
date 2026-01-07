@@ -3,7 +3,7 @@ using TaskManagementSystem.Domain.Entities;
 
 namespace TaskManagementSystem.Domain.Interface.Repositories
 {
-    public interface IRepositoryBase<T> where T : DomainEntity
+    public interface IRepository<T> where T : DomainEntity
     {
         IQueryable<T> Query();
         Task<T?> GetByIdAsync(int id);

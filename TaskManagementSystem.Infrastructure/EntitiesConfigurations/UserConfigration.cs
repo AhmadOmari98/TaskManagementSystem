@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TaskManagementSystem.Domain.Constants;
 using TaskManagementSystem.Domain.Entities;
 
 namespace TaskManagementSystem.Infrastructure.EntitiesConfigurations
@@ -16,11 +17,11 @@ namespace TaskManagementSystem.Infrastructure.EntitiesConfigurations
 
             builder.Property(e => e.Name)
                    .IsRequired()
-                   .HasMaxLength(250);
+                   .HasMaxLength(UserConstraints.NameMaxLength);
 
             builder.Property(e => e.Email)
                    .IsRequired()
-                   .HasMaxLength(250);
+                   .HasMaxLength(UserConstraints.EmailMaxLength);
 
             builder.HasIndex(e => e.Email)
                    .IsUnique();

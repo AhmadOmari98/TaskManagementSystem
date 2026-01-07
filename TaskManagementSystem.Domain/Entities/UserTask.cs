@@ -24,7 +24,7 @@ namespace TaskManagementSystem.Domain.Entities
         public int AssignedUserId { get; private set; }
         public virtual User AssignedUser { get; private set; }
         //--------------------------------------------------------*
-        internal void Update(string title, string description, TaskStatusEnum status, int assignedUserId, int updatedBy)
+        public void Update(string title, string description, TaskStatusEnum status, int assignedUserId, int updatedBy)
         {
             Title = title;
             Description = description;
@@ -34,14 +34,14 @@ namespace TaskManagementSystem.Domain.Entities
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
         }
-        internal void UpdateStatus(TaskStatusEnum status, int updatedBy)
+        public void UpdateStatus(TaskStatusEnum status, int updatedBy)
         {
             Status = status;
 
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
         }
-        internal void Delete(int updatedBy)
+        public void Delete(int updatedBy)
         {
             IsDeleted = true;
 

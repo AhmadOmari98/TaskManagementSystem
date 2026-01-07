@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TaskManagementSystem.Domain.Entities;
 using TaskManagementSystem.Domain.Interface.Repositories;
@@ -6,11 +7,11 @@ using TaskManagementSystem.Infrastructure.Context;
 
 namespace TaskManagementSystem.Infrastructure.Repositories
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : DomainEntity
+    public class Repository<T> : IRepository<T> where T : DomainEntity
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<T> _dbSet;
-        public RepositoryBase(ApplicationDbContext dbContext)
+        public Repository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<T>();

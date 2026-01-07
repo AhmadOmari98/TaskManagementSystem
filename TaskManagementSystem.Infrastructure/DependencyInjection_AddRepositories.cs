@@ -8,7 +8,7 @@ namespace TaskManagementSystem.Infrastructure
     {
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            return services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+            return services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }
