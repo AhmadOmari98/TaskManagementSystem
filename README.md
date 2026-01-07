@@ -2,40 +2,23 @@
 
 A robust, enterprise-grade Task Management System API built with .NET 8, implementing Clean Architecture principles with comprehensive role-based access control, logging, and testing.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Authentication & Authorization](#authentication--authorization)
-- [Database Seeding](#database-seeding)
-- [Testing](#testing)
-- [Logging](#logging)
-- [API Endpoints](#api-endpoints)
-- [Example Requests](#example-requests)
-
-## 🎯 Overview
+## Overview
 
 This Task Management System API provides a complete solution for managing users and tasks with sophisticated role-based access control. The system enforces strict permission-based authorization, ensuring that users can only access and modify resources according to their assigned roles.
 
 ### Key Highlights
 
-- ✅ **Clean Architecture** - Separation of concerns with clear layer boundaries
-- ✅ **Role-Based Access Control** - Fine-grained permissions for Admin and User roles
-- ✅ **Comprehensive Testing** - Unit tests for services and controllers
-- ✅ **Structured Logging** - Serilog integration with file and console logging
-- ✅ **API Documentation** - Swagger/OpenAPI integration
-- ✅ **In-Memory Database** - Entity Framework Core with in-memory provider
-- ✅ **Dependency Injection** - Full DI container integration
-- ✅ **Exception Handling** - Global exception handling middleware
-- ✅ **Validation** - Domain-level validation with clear error messages
+- **Clean Architecture** - Separation of concerns with clear layer boundaries
+- **Role-Based Access Control** - Fine-grained permissions for Admin and User roles
+- **Comprehensive Testing** - Unit tests for services and controllers
+- **Structured Logging** - Serilog integration with file and console logging
+- **API Documentation** - Swagger/OpenAPI integration
+- **In-Memory Database** - Entity Framework Core with in-memory provider
+- **Dependency Injection** - Full DI container integration
+- **Exception Handling** - Global exception handling middleware
+- **Validation** - Domain-level validation with clear error messages
 
-## ✨ Features
+## Features
 
 ### User Management
 - Create, read, update, and delete users
@@ -65,7 +48,7 @@ This Task Management System API provides a complete solution for managing users 
 - Database seeding with sample data
 - Comprehensive unit tests
 
-## 🏗️ Architecture
+## Architecture
 
 The project follows **Clean Architecture** principles with clear separation of concerns and dependency flow:
 
@@ -120,7 +103,7 @@ The project follows **Clean Architecture** principles with clear separation of c
 - **Infrastructure Layer**: Data access implementations, repository pattern, Entity Framework configurations, database context
 - **Domain Layer**: Core business entities, domain rules, validation logic, enums, constants, repository interfaces
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 - **.NET 8.0** - Latest .NET framework
 - **ASP.NET Core** - Web API framework
@@ -131,7 +114,7 @@ The project follows **Clean Architecture** principles with clear separation of c
 - **Moq** - Mocking framework for tests
 - **Dependency Injection** - Built-in .NET DI container
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 TaskManagementSystem/
@@ -205,20 +188,20 @@ API Layer
               └─→ Domain Layer (Core - No Dependencies)
 ```
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before running this project, ensure you have the following installed:
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) (recommended) or [Visual Studio Code](https://code.visualstudio.com/)
-- Any REST client (Postman, Insomnia, or Swagger UI) for API testing
+- Any REST client (Postman or Swagger UI) for API testing
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone <[repository-url](https://github.com/AhmadOmari98/TaskManagementSystem)>
 cd TaskManagementSystem
 ```
 
