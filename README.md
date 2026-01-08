@@ -4,7 +4,7 @@ A robust, enterprise-grade Task Management System API built with .NET 8, impleme
 
 ## Overview
 
-This Task Management System API provides a complete solution for managing users and tasks with sophisticated role-based access control. The system enforces strict permission-based authorization, ensuring that users can only access and modify resources according to their assigned roles.
+This Task Management System API provides a complete solution for managing users and workItems with sophisticated role-based access control. The system enforces strict permission-based authorization, ensuring that users can only access and modify resources according to their assigned roles.
 
 ### Key Highlights
 
@@ -26,14 +26,14 @@ This Task Management System API provides a complete solution for managing users 
 - Role-based access control (Admin/User)
 - Email and name validation
 
-### Task (WorkItem) Management
-- Create, read, update, and delete tasks
+### WorkItem (Task) Management
+- Create, read, update, and delete workItems
 - Status management (New, Pending, InProgress, Completed)
-- Task assignment to users
+- WorkItem assignment to users
 - Automatic reference code generation
 - Role-based access restrictions:
-  - **Admin**: Full access to all tasks
-  - **User**: Can only view and update status of assigned tasks
+  - **Admin**: Full access to all workItems
+  - **User**: Can only view and update status of assigned workItems
 
 ### Security & Authorization
 - Permission-based middleware for access control
@@ -231,8 +231,8 @@ Alternatively, you can run the project from Visual Studio by pressing `F5` or us
 
 Once the application is running, you can access:
 
-- **Swagger UI**: `https://localhost:<port>/swagger` (or `http://localhost:<port>/swagger` for HTTP)
-- **API Base URL**: `https://localhost:<port>/api`
+- **Swagger UI**: `https://localhost:7027/swagger/index.html`
+- **API Base URL**: `https://localhost:7027/api`
 
 > **Note**: The actual port number will be displayed in the console when you run the application. Check the `launchSettings.json` file for default ports.
 
@@ -252,7 +252,7 @@ The API is fully documented using Swagger/OpenAPI. Once the application is runni
 - Schema definitions
 - Header requirements documentation
 
-## 🔐 Authentication & Authorization
+## Authentication & Authorization
 
 ### Authentication Mechanism
 
@@ -268,22 +268,27 @@ LoggedIn-UserId: 1
 LoggedIn-UserRole: Admin
 ```
 
+```http
+LoggedIn-UserId: 2
+LoggedIn-UserRole: User
+```
+
 ### Authorization Model
 
 The system implements **permission-based authorization** with role mapping:
 
 #### Admin Permissions
-- ✅ Full access to all user operations (Create, Read, Update, Delete, Search)
-- ✅ Full access to all task operations (Create, Read, Update, Delete, Search)
-- ✅ Can view and manage all tasks regardless of assignment
+- Full access to all user operations (Create, Read, Update, Delete, Search)
+- Full access to all workItem operations (Create, Read, Update, Delete, Search)
+- Can view and manage all workItems regardless of assignment
 
 #### User Permissions
-- ✅ View own user profile
-- ✅ View tasks assigned to them
-- ✅ Update status of assigned tasks
-- ❌ Cannot create, update, or delete tasks
-- ❌ Cannot view tasks assigned to other users
-- ❌ Cannot manage other users
+- View own user profile
+- View workItems assigned to them
+- Update status of assigned workItems
+- Cannot create, update, or delete workItems
+- Cannot view workItems assigned to other users
+- Cannot manage other users
 
 ### Permission Middleware
 
@@ -294,7 +299,7 @@ The `PermissionMiddleware` automatically:
 4. Enforces role-based access control
 5. Returns `401 Unauthorized` or `403 Forbidden` when access is denied
 
-## 🌱 Database Seeding
+## Database Seeding
 
 The application automatically seeds the database with sample data on startup:
 
@@ -311,17 +316,47 @@ The application automatically seeds the database with sample data on startup:
    - Name: "Normal User"
    - Email: "user@test.com"
    - Role: User
+  
+**User Role**
+- 1 => Admin
+- 2 => User
 
-### Seeded Tasks
+### Seeded WorkItems
 
-The system seeds 3 sample tasks:
-- "Setup project" (assigned to Admin)
-- "Create users module" (assigned to Normal User)
-- "Create workItems module" (assigned to Normal User)
+1. **Setup project**
+   - ID: 1
+   - Title: "Setup project"
+   - Description: "Initial project setup"
+   - Status: New
+   - ReferenceCode: "WI-20260108104636938-B0E8576"
+   - AssignedUserId: 1
 
+1. **Create users module**
+   - ID: 2
+   - Title: "Create users module"
+   - Description: "Implement users CRUD"
+   - Status: New
+   - ReferenceCode: "WI-20260108104636952-65D24A2"
+   - AssignedUserId: 2
+  
+1. **Create users module**
+   - ID: 3
+   - Title: "Create workItems module"
+   - Description: "Implement workItems CRUD"
+   - Status: New
+   - ReferenceCode: "WI-20260108104636952-5422B49"
+   - AssignedUserId: 2
+
+      
+**WorkItem Status**
+- 1 => New
+- 2 => Pending
+- 3 => InProgress
+- 4 => Completed
+  
 > **Note**: Since the database is in-memory, all data is reset when the application restarts.
 
-## 🧪 Testing
+## Testing
 
 ### Running Tests
 
@@ -362,7 +397,7 @@ dotnet test --verbosity normal
 dotnet test TaskManagementSystem.Tests/TaskManagementSystem.Tests.csproj
 ```
 
-## 📝 Logging
+## Logging
 
 The application uses **Serilog** for structured logging:
 
@@ -384,7 +419,7 @@ The application uses **Serilog** for structured logging:
 - Console: Standard output
 - Files: `TaskManagementSystem.API/Logs/`
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Users Endpoints
 
@@ -400,30 +435,30 @@ The application uses **Serilog** for structured logging:
 
 | Method | Endpoint | Permission | Description |
 |--------|----------|------------|-------------|
-| `POST` | `/api/workitems/search` | `WorkItem.Search` | Search and paginate tasks |
-| `GET` | `/api/workitems/{id}` | `WorkItem.View` | Get task by ID |
-| `POST` | `/api/workitems` | `WorkItem.Create` | Create a new task (Admin only) |
-| `PUT` | `/api/workitems` | `WorkItem.Update` | Update task details (Admin only) |
-| `PATCH` | `/api/workitems/{id}/status` | `WorkItem.UpdateStatus` | Update task status |
-| `DELETE` | `/api/workitems/{id}` | `WorkItem.Delete` | Delete a task (Admin only) |
+| `POST` | `/api/workitems/search` | `WorkItem.Search` | Search and paginate workItems |
+| `GET` | `/api/workitems/{id}` | `WorkItem.View` | Get workItem by ID |
+| `POST` | `/api/workitems` | `WorkItem.Create` | Create a new workItem (Admin only) |
+| `PUT` | `/api/workitems` | `WorkItem.Update` | Update workItem details (Admin only) |
+| `PATCH` | `/api/workitems/{id}/status` | `WorkItem.UpdateStatus` | Update workItem status |
+| `DELETE` | `/api/workitems/{id}` | `WorkItem.Delete` | Delete a workItem (Admin only) |
 
 ### Access Control Summary
 
 | Operation | Admin | User |
 |-----------|-------|------|
-| View All Users | ✅ | ❌ |
-| View Own Profile | ✅ | ✅ |
-| Create User | ✅ | ❌ |
-| Update User | ✅ | ❌ |
-| Delete User | ✅ | ❌ |
-| View All Tasks | ✅ | ❌ |
-| View Assigned Tasks | ✅ | ✅ |
-| Create Task | ✅ | ❌ |
-| Update Task (Full) | ✅ | ❌ |
-| Update Task Status | ✅ | ✅ (Own tasks only) |
-| Delete Task | ✅ | ❌ |
+| View All Users | Yes | No |
+| View Own Profile | Yes | Yes |
+| Create User | Yes | No |
+| Update User | Yes | No |
+| Delete User | Yes | No |
+| View All workItems | Yes | No |
+| View Assigned workItems | Yes | Yes |
+| Create workItem | Yes | No |
+| Update workItem (Full) | Yes | No |
+| Update workItem Status | Yes | Yes (Own workItems only) |
+| Delete workItem | Yes | No |
 
-## 💡 Example Requests
+## Example Requests
 
 ### 1. Create a User (Admin Only)
 
@@ -434,8 +469,8 @@ LoggedIn-UserId: 1
 LoggedIn-UserRole: Admin
 
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com",
+  "name": "Normal User 2",
+  "email": "user2@test.com",
   "role": "User"
 }
 ```
@@ -467,7 +502,7 @@ LoggedIn-UserRole: Admin
 }
 ```
 
-### 4. Create a Task (Admin Only)
+### 4. Create a workItem (Admin Only)
 
 ```http
 POST /api/workitems
@@ -482,23 +517,23 @@ LoggedIn-UserRole: Admin
 }
 ```
 
-### 5. Get Task by ID
+### 5. Get workItem by ID
 
-**As Admin** (can view any task):
+**As Admin** (can view any workItem):
 ```http
 GET /api/workitems/1
 LoggedIn-UserId: 1
 LoggedIn-UserRole: Admin
 ```
 
-**As User** (can only view assigned tasks):
+**As User** (can only view assigned workItems):
 ```http
 GET /api/workitems/2
 LoggedIn-UserId: 2
 LoggedIn-UserRole: User
 ```
 
-### 6. Update Task Status (User can update own tasks)
+### 6. Update WorkItem Status (User can update own workItems)
 
 ```http
 PATCH /api/workitems/2/status?status=InProgress
@@ -506,9 +541,9 @@ LoggedIn-UserId: 2
 LoggedIn-UserRole: User
 ```
 
-### 7. Search Tasks
+### 7. Search WorkItems
 
-**As Admin** (sees all tasks):
+**As Admin** (sees all workItems):
 ```http
 POST /api/workitems/search
 Content-Type: application/json
@@ -520,13 +555,14 @@ LoggedIn-UserRole: Admin
   "pageSize": 10,
   "filter": {
     "title": null,
+    "referenceCode": null,
     "status": null,
     "assignedUserId": null
   }
 }
 ```
 
-**As User** (sees only assigned tasks):
+**As User** (sees only assigned workItems):
 ```http
 POST /api/workitems/search
 Content-Type: application/json
@@ -537,30 +573,15 @@ LoggedIn-UserRole: User
   "pageNumber": 1,
   "pageSize": 10,
   "filter": {
-    "title": null,
+   "title": null,
+    "referenceCode": null,
     "status": null,
     "assignedUserId": null
   }
 }
 ```
 
-## 🔧 Configuration
-
-### Application Settings
-
-The application configuration is stored in `appsettings.json`:
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
-}
-```
+## Configuration
 
 ### Database Configuration
 
@@ -573,7 +594,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 > **Note**: Data is persisted only during the application's lifetime. Restarting the application will reset all data.
 
-## 🎓 Design Patterns & Best Practices
+## Design Patterns & Best Practices
 
 ### Architecture Pattern: Clean Architecture
 
@@ -620,37 +641,22 @@ The project implements **Clean Architecture** with the following dependency flow
 
 ### Best Practices
 
-- ✅ **Separation of concerns** - Each layer has a single, well-defined responsibility
-- ✅ **Single Responsibility Principle** - Classes and methods have focused responsibilities
-- ✅ **Dependency Inversion Principle** - Dependencies point inward toward Domain
-- ✅ **Domain validation** - Business rules enforced at domain entity level
-- ✅ **Exception handling** - Global exception handling middleware
-- ✅ **Structured logging** - Comprehensive logging with Serilog
-- ✅ **Repository abstraction** - Data access abstracted through interfaces
-- ✅ **Comprehensive error responses** - Clear error messages for API consumers
-
-## 📄 License
-
-This project is developed as part of a technical assessment for Genovation AI.
-
-## 👤 Author
-
-Developed as a technical assessment demonstrating proficiency in:
-- .NET 8 and ASP.NET Core
-- Clean Architecture
-- Entity Framework Core
-- RESTful API design
-- Role-based access control
-- Unit testing
-- API documentation
+- **Separation of concerns** - Each layer has a single, well-defined responsibility
+- **Single Responsibility Principle** - Classes and methods have focused responsibilities
+- **Dependency Inversion Principle** - Dependencies point inward toward Domain
+- **Domain validation** - Business rules enforced at domain entity level
+- **Exception handling** - Global exception handling middleware
+- **Structured logging** - Comprehensive logging with Serilog
+- **Repository abstraction** - Data access abstracted through interfaces
+- **Comprehensive error responses** - Clear error messages for API consumers
 
 ---
 
-## 🚀 Quick Start Summary
+## Quick Start Summary
 
 ```bash
 # 1. Clone and navigate
-git clone <repository-url>
+git clone https://github.com/AhmadOmari98/TaskManagementSystem
 cd TaskManagementSystem
 
 # 2. Restore and build
@@ -662,7 +668,7 @@ cd TaskManagementSystem.API
 dotnet run
 
 # 4. Access Swagger
-# Open browser: https://localhost:<port>/swagger
+# Open browser: https://localhost:7027/swagger/index.html
 
 # 5. Run tests
 dotnet test
